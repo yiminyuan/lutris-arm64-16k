@@ -2,6 +2,7 @@
 
 import json
 import os
+import platform
 from gettext import gettext as _
 from typing import Dict, Generator, List, Optional
 
@@ -93,6 +94,13 @@ def get_proton_wine_path(version: str) -> str:
         wine_path_dist = os.path.join(wine_path, "dist/bin/wine")
         if os.path.exists(wine_path_dist):
             return wine_path_dist
+
+        # ARM64 builds of Proton keep their wine in 'files/bin-arm64', which
+        # Proton itself prefers over 'files/bin' on aarch64 hosts.
+        if platform.machine() == "aarch64":
+            wine_path_arm64 = os.path.join(wine_path, "files/bin-arm64/wine")
+            if os.path.exists(wine_path_arm64):
+                return wine_path_arm64
 
         wine_path_files = os.path.join(wine_path, "files/bin/wine")
         if os.path.exists(wine_path_files):
